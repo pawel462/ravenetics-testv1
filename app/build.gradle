@@ -1,0 +1,41 @@
+plugins {
+    id 'scala'
+
+}
+
+repositories {
+    jcenter()
+}
+
+def scalaBinVersion = '2.13'
+def akkaVersion = '2.6.8'
+def akkaHttpVersion= "10.2.1"
+
+dependencies {
+    // Use Scala 2.13 in our library project
+    implementation 'org.scala-lang:scala-library:2.13.3'
+
+
+    compile group: 'com.typesafe.akka', name: "akka-stream_${scalaBinVersion}", version: akkaVersion
+    compile group: 'com.typesafe.akka', name: "akka-http_${scalaBinVersion}", version: akkaHttpVersion
+    compile group: 'com.typesafe.akka', name: "akka-stream-testkit_${scalaBinVersion}", version: akkaVersion
+    compile group: 'com.typesafe.akka', name: "akka-http-testkit_${scalaBinVersion}", version: akkaHttpVersion
+
+
+    // Use Scalatest for testing our library
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.scalatest:scalatest_2.13:3.2.0'
+    testImplementation 'org.scalatestplus:junit-4-12_2.13:3.2.0.0'
+
+}
+
+
+task runAllTestsWithDependencies {
+    dependsOn ":http-server:dockerRun"
+    dependsOn "test"
+    tasks.findByName('test').mustRunAfter ':http-server:dockerRun'
+
+    doLast {
+        println "done, congrats!"
+    }
+}

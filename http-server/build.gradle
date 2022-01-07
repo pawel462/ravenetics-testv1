@@ -1,0 +1,29 @@
+plugins {
+    id 'com.palantir.docker' version '0.25.0'
+    id 'com.palantir.docker-run' version '0.25.0'
+}
+
+docker {
+    name "http-server"
+    dockerfile file('src/Dockerfile')
+    copySpec.from("src/myDir").into(".")
+}
+
+dockerRun {
+    name 'http-server-container'
+    image 'http-server'
+    ports '88:7777'
+    daemonize true
+    clean = true
+}
+
+
+tasks.getByName("dockerRemoveContainer").dependsOn("dockerStop")
+def run = tasks.getByName("dockerRun")
+def build = tasks.getByName("docker")
+run.dependsOn(build)
+
+run.mustRunAfter(build)
+
+
+run.dependsOn("dockerRemoveContainer")
